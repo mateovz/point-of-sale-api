@@ -49,16 +49,21 @@ class StoreTest extends TestCase
             ->assertJsonCount(7, 'errors');
     }
 
-    public function test_name_exists(){
+    public function test_name_or_code_exists(){
         $product = Product::factory()->create();
         $user = User::factory()->create();
         $token = $user->createToken('default')->plainTextToken;
-        $data = ['name'  => $product->name];
-        $this->post(route('product.store'), $data, [
-            'Accept'        => 'application/json',
-            'Authorization' => 'Bearer '.$token
-        ])->assertStatus(400)
-            ->assertJson(['status' => 'error'])
-            ->assertJsonCount(1, 'errors.name');
+        $data = [
+            'name' => ['name' => $product->name],
+            'code' => ['code' => $product->code]
+        ];
+        foreach ($data as $key => $value) {
+            $this->post(route('product.store'), $value, [
+                'Accept'        => 'application/json',
+                'Authorization' => 'Bearer '.$token
+            ])->assertStatus(400)
+                ->assertJson(['status' => 'error'])
+                ->assertJsonCount(1, 'errors.'.$key);
+        }
     }
 }
