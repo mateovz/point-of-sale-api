@@ -23,7 +23,7 @@ class UpdateTest extends TestCase
             'category_id'   => $product->category_id,
             'provider_id'   => $product->provider_id,
             'name'          => $this->faker->words(2, true),
-            'stock'         => random_int(0, 100),
+            'stock'         => random_int(1, 100),
             'price'         => $product->price,
             'status'        => 0,
             'code'          => $product->code
@@ -84,7 +84,7 @@ class UpdateTest extends TestCase
             'category_id'   => Category::factory()->create()->id,
             'provider_id'   => Provider::factory()->create()->id,
             'name'          => $this->faker->words(2, true),
-            'stock'         => random_int(0, 100),
+            'stock'         => random_int(1, 100),
             'price'         => $this->faker->randomFloat(2, 0, 50),
             'status'        => true,
             'code'          => $this->faker->numerify('####-####-####')
