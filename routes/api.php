@@ -5,6 +5,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProviderController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -60,4 +61,8 @@ Route::resource('product', ProductController::class)
 
 Route::resource('client', ClientController::class)
     ->names('client')
+    ->except(['create', 'show', 'edit']);
+
+Route::resource('purchase', PurchaseController::class)
+    ->names('purchase')
     ->except(['create', 'show', 'edit']);
