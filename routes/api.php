@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProviderController;
@@ -51,4 +52,12 @@ Route::resource('provider', ProviderController::class)
 
 Route::resource('product', ProductController::class)
     ->names('product')
+    ->except(['create', 'show', 'edit']);
+
+Route::resource('product', ProductController::class)
+    ->names('product')
+    ->except(['create', 'show', 'edit']);
+
+Route::resource('client', ClientController::class)
+    ->names('client')
     ->except(['create', 'show', 'edit']);
