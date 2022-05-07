@@ -37,7 +37,8 @@ class UpdateTest extends TestCase
         $client = Client::factory()->create();
         $token = User::factory()->create()
             ->createToken('default')->plainTextToken;
-        $this->put(route('client.update', ['client' => $client->id]), [], [
+        $data = ['email' => null];
+        $this->put(route('client.update', ['client' => $client->id]), $data, [
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token
         ])->assertStatus(400)

@@ -27,11 +27,11 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'              => ['required', 'string', 'max:150'],
-            'identification'    => ['required', 'alpha_dash', 'max:50', 'unique:clients,identification,'.$this->client],
-            'ruc'               => ['nullable', 'numeric', 'max:50', 'unique:clients,ruc,'.$this->client],
-            'email'             => ['required', 'email', 'max:255', 'unique:clients,email,'.$this->client],
-            'address'           => ['nullable', 'string', 'max:255']
+            'name'              => ['string', 'max:150'],
+            'identification'    => ['alpha_dash', 'max:50', 'unique:clients,identification,'.$this->client],
+            'ruc'               => ['numeric', 'max:50', 'unique:clients,ruc,'.$this->client],
+            'email'             => ['email', 'max:255', 'unique:clients,email,'.$this->client],
+            'address'           => ['string', 'max:255']
         ];
     }
 

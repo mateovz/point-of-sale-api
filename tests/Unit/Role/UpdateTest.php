@@ -35,14 +35,15 @@ class UpdateTest extends TestCase
 
     public function test_invalid_data(){
         $role = Role::factory()->create();
-        $user = User::factory()->create();
-        $token = $user->createToken('default')->plainTextToken;
-        $this->put(route('role.update', ['role' => $role->id]), [], [
+        $token = User::factory()->create()
+            ->createToken('default')->plainTextToken;
+        $data = ['name' => null];
+        $this->put(route('role.update', ['role' => $role->id]), $data, [
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token
         ])->assertStatus(400)
             ->assertJson(['status' => 'error'])
-            ->assertJsonCount(2, 'errors');
+            ->assertJsonStructure(['errors' => ['name']]);
     }
 
     public function test_name_or_slug_exists(){

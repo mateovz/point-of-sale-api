@@ -27,8 +27,8 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'  => ['required', 'string', 'max:255', 'unique:permissions,name,'.$this->permission],
-            'slug'  => ['required', 'string', 'max:255', 'unique:permissions,slug,'.$this->permission],
+            'name'  => ['string', 'max:255', 'unique:permissions,name,'.$this->permission],
+            'slug'  => ['string', 'max:255', 'unique:permissions,slug,'.$this->permission],
         ];
     }
 

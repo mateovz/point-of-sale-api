@@ -27,13 +27,13 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'category_id'   => ['required', 'numeric', 'exists:categories,id'],
-            'provider_id'   => ['required', 'numeric', 'exists:providers,id'],
-            'name'          => ['required', 'string', 'max:255', 'unique:products,name,'.$this->product],
-            'stock'         => ['required', 'numeric', 'min:1'],
-            'price'         => ['required', 'numeric', 'min:0.01'],
-            'status'        => ['required', 'boolean'],
-            'code'          => ['required', 'alpha_dash', 'max:255', 'unique:products,code,'.$this->product]
+            'category_id'   => ['numeric', 'exists:categories,id'],
+            'provider_id'   => ['numeric', 'exists:providers,id'],
+            'name'          => ['string', 'max:255', 'unique:products,name,'.$this->product],
+            'stock'         => ['numeric', 'min:1'],
+            'price'         => ['numeric', 'min:0.01'],
+            'status'        => ['boolean'],
+            'code'          => ['alpha_dash', 'max:255', 'unique:products,code,'.$this->product]
         ];
     }
 

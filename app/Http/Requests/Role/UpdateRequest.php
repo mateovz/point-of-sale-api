@@ -27,9 +27,9 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'  => ['required', 'string', 'max:255', 'unique:roles,name,'.$this->role],
-            'slug'  => ['required', 'string', 'max:255', 'unique:roles,slug,'.$this->role],
-            'description' => ['nullable', 'string']
+            'name'          => ['string', 'max:255', 'unique:roles,name,'.$this->role],
+            'slug'          => ['string', 'max:255', 'unique:roles,slug,'.$this->role],
+            'description'   => ['string']
         ];
     }
 

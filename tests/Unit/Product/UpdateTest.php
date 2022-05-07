@@ -50,12 +50,13 @@ class UpdateTest extends TestCase
         $product = Product::factory()->create();
         $token = User::factory()->create()
             ->createToken('default')->plainTextToken;
-        $this->put(route('product.update', ['product' => $product->id]), [], [
+        $data = ['provider_id' => null];
+        $this->put(route('product.update', ['product' => $product->id]), $data, [
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token
         ])->assertStatus(400)
             ->assertJson(['status' => 'error'])
-            ->assertJsonStructure(['errors']);
+            ->assertJsonStructure(['errors' => ['provider_id']]);
     }
 
     public function test_name__or_code_exists(){

@@ -27,8 +27,8 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'  => ['required', 'string'],
-            'email' => ['required', 'email', 'unique:users,email,'.auth('sanctum')->user()->id]
+            'name'  => ['string'],
+            'email' => ['email', 'unique:users,email,'.auth('sanctum')->user()->id]
         ];
     }
 

@@ -34,14 +34,15 @@ class UpdateTest extends TestCase
 
     public function test_invalid_data(){
         $permission = Permission::factory()->create();
-        $user = User::factory()->create();
-        $token = $user->createToken('default')->plainTextToken;
-        $this->put(route('permission.update', ['permission' => $permission->id]), [], [
+        $token = User::factory()->create()
+            ->createToken('default')->plainTextToken;
+        $data = ['name' => null];
+        $this->put(route('permission.update', ['permission' => $permission->id]), $data, [
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token
         ])->assertStatus(400)
             ->assertJson(['status' => 'error'])
-            ->assertJsonCount(2, 'errors');
+            ->assertJsonStructure(['errors' => ['name']]);
     }
 
     public function test_name_or_slug_exists(){

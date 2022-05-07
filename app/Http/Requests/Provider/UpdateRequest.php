@@ -27,11 +27,11 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'      => ['required', 'string', 'max:100', 'unique:providers,name,'.$this->provider],
-            'email'     => ['required', 'email', 'max:255', 'unique:providers,email,'.$this->provider],
-            'address'   => ['nullable', 'string', 'max:255'],
-            'phone'     => ['nullable', 'string', 'max:20'],
-            'ruc'       => ['nullable', 'numeric', 'digits_between:1,50', 'unique:providers,ruc,'.$this->provider]
+            'name'      => ['string', 'max:100', 'unique:providers,name,'.$this->provider],
+            'email'     => ['email', 'max:255', 'unique:providers,email,'.$this->provider],
+            'address'   => ['string', 'max:255'],
+            'phone'     => ['string', 'max:20'],
+            'ruc'       => ['numeric', 'digits_between:1,50', 'unique:providers,ruc,'.$this->provider]
         ];
     }
 
