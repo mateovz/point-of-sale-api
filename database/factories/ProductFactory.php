@@ -23,7 +23,7 @@ class ProductFactory extends Factory
             'image'         => null,
             'price'         => $this->faker->randomFloat(2, 0.01),
             'status'        => $this->faker->boolean,
-            'code'          => $this->faker->numerify('###-#??#-?##??')
+            'code'          => $this->faker->bothify('###-#??#-?##??')
         ];
     }
 }
