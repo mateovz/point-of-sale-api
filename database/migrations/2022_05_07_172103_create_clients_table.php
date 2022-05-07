@@ -19,7 +19,7 @@ class CreateClientsTable extends Migration
             $table->string('identification', 50)->unique();
             $table->string('ruc', 50)->nullable()->unique();
             $table->string('email')->unique();
-            $table->string('address');
+            $table->string('address')->nullable();
             $table->timestamps();
         });
     }
