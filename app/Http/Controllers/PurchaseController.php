@@ -31,6 +31,23 @@ class PurchaseController extends Controller
         ], 200);
     }
 
+    public function show($id, Request $request){
+        $purchase = Purchase::find($id);
+        if(is_null($purchase)){
+            return response()->json([
+                'status'    => 'error',
+                'errors'    => ['purchase' => ['Does not exist.']]
+            ], 400);
+        }
+
+        $purchase = $this->getPurchaseInfo($purchase, $request->user());
+
+        return response()->json([
+            'status'    => 'success',
+            'purchase'  => $purchase
+        ], 200);
+    }
+
     public function store(StoreRequest $request){
         $data = $request->validated();
         $data['total'] = 0;

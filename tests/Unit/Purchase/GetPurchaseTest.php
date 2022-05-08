@@ -42,4 +42,32 @@ class GetPurchaseTest extends TestCase
                 ]
             ]);
     }
+
+    public function test_get_purchase(){
+        $token = (User::factory()->create())
+            ->createToken('default')->plainTextToken;
+        $purchase = Purchase::factory()->create();
+        $this->get(route('purchase.show', ['purchase' => $purchase->id]), [
+            'Accept'        => 'application/json',
+            'Authorization' => 'Bearer '.$token
+        ])
+            ->assertOk()
+            ->assertJson([
+                'status'    => 'success',
+                'purchase'  => ['id' => $purchase->id]
+            ])
+            ->assertJsonStructure(['purchase' => ['user', 'provider']]);
+    }
+
+    public function test_get_null_purchase(){
+        $token = (User::factory()->create())
+            ->createToken('default')->plainTextToken;
+        $this->get(route('purchase.show', ['purchase' => random_int(10, 20)]), [
+            'Accept'        => 'application/json',
+            'Authorization' => 'Bearer '.$token
+        ])
+            ->assertStatus(400)
+            ->assertJson(['status' => 'error'])
+            ->assertJsonStructure(['errors' => ['purchase']]);
+    }
 }
