@@ -12,7 +12,7 @@ class RoleController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except('index');
+        $this->middleware('auth:sanctum')->except('index', 'show');
         $this->middleware('ability:role.store')->only('store');
         $this->middleware('ability:role.update')->only('update');
         $this->middleware('ability:role.destroy')->only('destroy');    
@@ -27,6 +27,21 @@ class RoleController extends Controller
             'status'    => 'success',
             'roles'     => $roles
         ], 200);
+    }
+
+    public function show($id){
+        $role = Role::find($id);
+        if(is_null($role)){
+            return response()->json([
+                'status'    => 'error',
+                'errors'    => ['role' => ['Does not exist.']]
+            ], 400);
+        }
+        $role->permissions;
+        return response()->json([
+            'status'    => 'success',
+            'role'      => $role
+        ]);
     }
 
     public function store(StoreRequest $request){
@@ -50,6 +65,7 @@ class RoleController extends Controller
         $data = $request->validated();
         $data['slug'] = Str::slug($data['slug'], '.');
         $role->update($data);
+        $role->permissions;
         return response()->json([
             'status'    => 'success',
             'role'      => $role
