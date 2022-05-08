@@ -12,7 +12,7 @@ class ClientController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('ability:client.view')->only('index');
+        $this->middleware('ability:client.view')->only('index', 'show');
         $this->middleware('ability:client.store')->only('store');
         $this->middleware('ability:client.update')->only('update');
         $this->middleware('ability:client.destroy')->only('destroy');
@@ -22,6 +22,20 @@ class ClientController extends Controller
         return response()->json([
             'status'    => 'success',
             'clients'  => Client::all()
+        ], 200);
+    }
+
+    public function show($id){
+        $client = Client::find($id);
+        if(is_null($client)){
+            return response()->json([
+                'status'    => 'error',
+                'errors'    => ['client' => ['Does not exist.']]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => 'success',
+            'client'    => $client
         ], 200);
     }
 
