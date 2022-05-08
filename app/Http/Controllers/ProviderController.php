@@ -12,7 +12,7 @@ class ProviderController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('ability:provider.view')->only('index');
+        $this->middleware('ability:provider.view')->only('index', 'show');
         $this->middleware('ability:provider.store')->only('store');
         $this->middleware('ability:provider.update')->only('update');
         $this->middleware('ability:provider.destroy')->only('destroy');
@@ -22,6 +22,20 @@ class ProviderController extends Controller
         return response()->json([
             'status'    => 'success',
             'providers' => Provider::all()
+        ], 200);
+    }
+
+    public function show($id){
+        $provider = Provider::find($id);
+        if(is_null($provider)){
+            return response()->json([
+                'status'    => 'error',
+                'errors'    => ['provider' => ['Does not exist.']]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => 'success',
+            'provider'  => $provider
         ], 200);
     }
 
