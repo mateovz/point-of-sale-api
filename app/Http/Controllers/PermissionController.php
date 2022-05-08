@@ -12,7 +12,7 @@ class PermissionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except('index');
+        $this->middleware('auth:sanctum')->except('index', 'show');
         $this->middleware('ability:permission.store')->only('store');
         $this->middleware('ability:permission.update')->only('update');
         $this->middleware('ability:permission.destroy')->only('destroy');    
@@ -26,6 +26,21 @@ class PermissionController extends Controller
         return response()->json([
             'status'        => 'success',
             'permissions'   => $permissions
+        ], 200);
+    }
+
+    public function show($id){
+        $permission = Permission::find($id);
+        if(is_null($permission)){
+            return response()->json([
+                'status' => 'error',
+                'errors'    => ['permission' => ['Does not exist.']]
+            ], 400);
+        }
+        $permission->roles;
+        return response()->json([
+            'status'        => 'success',
+            'permission'    => $permission
         ], 200);
     }
 
