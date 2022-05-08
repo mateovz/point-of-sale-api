@@ -17,7 +17,7 @@ class CreatePurchasesTable extends Migration
             $table->id();
             $table->foreignId('provider_id')->references('id')->on('providers');
             $table->foreignId('user_id')->references('id')->on('users');
-            $table->date('purchase_date')->useCurrent();
+            $table->date('purchase_date')->nullable()->useCurrent();
             $table->float('tax')->default(0);
             $table->float('total');
             $table->boolean('status')->default(1);

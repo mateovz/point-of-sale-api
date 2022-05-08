@@ -43,6 +43,7 @@ class UpdateTest extends TestCase
                 ]
             ]);
         $this->assertDatabaseHas('purchases', $data);
+        $this->assertDatabaseMissing('purchases', array_merge($data, ['purchase_data' => null]));
         $this->assertDatabaseHas('purchase_details', array_merge(
             ['purchase_id' => $purchase->id],
             $extraData['products'][0]
