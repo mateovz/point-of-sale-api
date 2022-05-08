@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Purchase;
 
+use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\PurchaseDetail;
 use App\Models\User;
@@ -47,6 +48,29 @@ class UpdateTest extends TestCase
         $this->assertDatabaseHas('purchase_details', array_merge(
             ['purchase_id' => $purchase->id],
             $extraData['products'][0]
+        ));
+    }
+
+    public function test_add_product_to_purchase(){
+        $purchase = Purchase::factory()
+            ->has(PurchaseDetail::factory(3))
+            ->create();
+        $token = User::factory()->create()
+            ->createToken('default')->plainTextToken;
+        $newProduct = Product::factory()->create();
+        $data['products'][] = [
+            'product_id'    => $newProduct->id,
+            'quantity'      => random_int(1, 5)
+        ];
+        $this->put(route('purchase.update', ['purchase' => $purchase->id]),
+            $data ,[
+            'Accept'        => 'application/json',
+            'Authorization' => 'Bearer '.$token
+        ])->assertOk()
+            ->assertJson(['status'    => 'success']);
+        $this->assertDatabaseHas('purchase_details', array_merge(
+            ['purchase_id' => $purchase->id],
+            $data['products'][0]
         ));
     }
 

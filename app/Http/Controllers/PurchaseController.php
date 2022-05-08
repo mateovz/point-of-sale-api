@@ -149,7 +149,11 @@ class PurchaseController extends Controller
 
     private function updatePurchaseDetails(Purchase $purchase, array $product):void{
         $detail = $purchase->purchaseDetails()->where('id', $product['product_id'])->first();
-        $detail->update($product);
+        if(is_null($detail)){
+            $this->createPurchaseDetails($purchase, [$product]);
+        }else{
+            $detail->update($product);
+        }
     }
 
     private function calculateTotal(Purchase $purchase):float{
