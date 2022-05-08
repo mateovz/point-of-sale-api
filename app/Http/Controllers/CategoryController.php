@@ -11,7 +11,7 @@ class CategoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except('index');
+        $this->middleware('auth:sanctum')->except('index', 'show');
         $this->middleware('ability:category.store')->only('store');
         $this->middleware('ability:category.update')->only('update');
         $this->middleware('ability:category.destroy')->only('destroy');
@@ -21,6 +21,20 @@ class CategoryController extends Controller
         return response()->json([
             'status'        => 'success',
             'categories'    => Category::all()
+        ], 200);
+    }
+
+    public function show($id){
+        $category = Category::find($id);
+        if(is_null($category)){
+            return response()->json([
+                'status'    => 'error',
+                'errors'    => ['category' => 'Does not exist.']
+            ], 400);
+        }
+        return response()->json([
+            'status'    => 'success',
+            'category'  => $category
         ], 200);
     }
 
