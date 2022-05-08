@@ -21,7 +21,7 @@ class ProductFactory extends Factory
             'name'          => $this->faker->unique()->word,
             'stock'         => $this->faker->numberBetween(1, 100),
             'image'         => null,
-            'price'         => $this->faker->randomFloat(2, 0.01),
+            'price'         => $this->faker->randomFloat(2, 0.01, 100),
             'status'        => $this->faker->boolean,
             'code'          => $this->faker->bothify('###-#??#-?##??')
         ];

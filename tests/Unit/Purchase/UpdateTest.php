@@ -3,6 +3,7 @@
 namespace Tests\Unit\Purchase;
 
 use App\Models\Purchase;
+use App\Models\PurchaseDetail;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -14,13 +15,20 @@ class UpdateTest extends TestCase
     use WithFaker;
 
     public function test_update(){
-        $purchase = Purchase::factory()->create();
+        $purchase = Purchase::factory()
+            ->has(PurchaseDetail::factory(3))
+            ->create();
         $token = User::factory()->create()
             ->createToken('default')->plainTextToken;
         $data = [
-            'tax' => random_int(1, 20)
+            'tax' => random_int(1, 20),
         ];
-        $this->put(route('purchase.update', ['purchase' => $purchase->id]), $data, [
+        $extraData['products'][] = [
+            'product_id'    => $purchase->purchaseDetails[0]->id,
+            'quantity'      => random_int(1, 5)
+        ];
+        $this->put(route('purchase.update', ['purchase' => $purchase->id]),
+            array_merge($data, $extraData) ,[
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token
         ])->assertOk()
@@ -28,10 +36,17 @@ class UpdateTest extends TestCase
             ->assertJsonStructure([
                 'purchase' => [
                     'user',
-                    'provider'
+                    'provider',
+                    'purchase_details' => [
+                        '*' => ['product_id']
+                    ]
                 ]
             ]);
         $this->assertDatabaseHas('purchases', $data);
+        $this->assertDatabaseHas('purchase_details', array_merge(
+            ['purchase_id' => $purchase->id],
+            $extraData['products'][0]
+        ));
     }
 
     public function test_invalid_data(){

@@ -31,8 +31,13 @@ class StoreRequest extends FormRequest
             'user_id'       => ['required', 'numeric', 'exists:users,id'],
             'purchase_date' => ['date', 'before:tomorrow'],
             'tax'           => ['numeric', 'max:100'],
-            'total'         => ['required', 'numeric', 'min:0.01'],
-            'status'        => ['boolean']
+            'status'        => ['boolean'],
+
+            //purchase details
+            'products'              => ['required', 'array'],
+            'products.*.product_id' => ['required', 'numeric', 'exists:products,id'],
+            'products.*.quantity'   => ['required', 'numeric', 'min:1'],
+            'products.*.price'      => ['numeric']
         ];
     }
 

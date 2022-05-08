@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Purchase\StoreRequest;
 use App\Http\Requests\Purchase\UpdateRequest;
+use App\Models\Product;
 use App\Models\Purchase;
+use App\Models\PurchaseDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -21,8 +23,7 @@ class PurchaseController extends Controller
     public function index(Request $request){
         $purchases = Purchase::all();
         foreach ($purchases as $key => $purchase) {
-            $tables = ['user', 'provider'];
-            $purchases[$key] = $this->getExtraInfo($purchase, $tables, $request->user());
+            $purchases[$key] = $this->getPurchaseInfo($purchase, $request->user());
         }
         return response()->json([
             'status'    => 'success',
@@ -31,9 +32,17 @@ class PurchaseController extends Controller
     }
 
     public function store(StoreRequest $request){
-        $purchase = Purchase::create($request->validated());
-        $tables = ['user', 'provider'];
-        $purchase = $this->getExtraInfo($purchase, $tables, $request->user());
+        $data = $request->validated();
+        $data['total'] = 0;
+
+        $purchase = Purchase::create($data);
+        $this->createPurchaseDetails($purchase, $data['products']);
+
+        $total = $this->calculateTotal($purchase);
+        $purchase->update(['total' => $total]);
+
+        $purchase = $this->getPurchaseInfo($purchase, $request->user());
+
         return response()->json([
             'status'    => 'success',
             'purchase'  => $purchase
@@ -48,9 +57,18 @@ class PurchaseController extends Controller
                 'errors'    => ['purchase' => ['Does not exist.']]
             ], 400);
         }
-        $purchase->update($request->validated());
-        $tables = ['user', 'provider'];
-        $purchase = $this->getExtraInfo($purchase, $tables, $request->user());
+        
+        $data = $request->validated();
+        $purchase->update($data);
+
+        if(isset($data['products'])){
+            foreach ($data['products'] as $product) {
+                $this->updatePurchaseDetails($purchase, $product);
+            }
+        }
+
+        $purchase = $this->getPurchaseInfo($purchase, $request->user());
+
         return response()->json([
             'status'    => 'success',
             'purchase'  => $purchase
@@ -71,17 +89,54 @@ class PurchaseController extends Controller
         ], 200);
     }
 
-    private function getExtraInfo(Purchase $purchase, array $tables, User $user):array{
-        $purchaseExtra = $purchase->toArray();
-        foreach ($tables as $table) {
-            if($user->tokenCan($table.'.view')){
-                $purchaseExtra = array_merge($purchaseExtra, [$table => $purchase->$table]);
-            }else{
-                $purchaseExtra = array_merge($purchaseExtra,
-                    [$table => $purchase->$table()->select('name')->first()]
-                );
-            }
+    private function getPurchaseInfo(Purchase $purchase, User $user):array{
+        $purchase->purchaseDetails;
+        $purchase = array_merge(
+            $purchase->toArray(),
+            [
+                'user' => $this->getUserInfo($purchase, $user),
+                'provider' => $this->getProviderInfo($purchase, $user)
+            ],
+        );
+        return $purchase;
+    }
+
+    private function getUserInfo(Purchase $purchase, User $currentUser):array{
+        if($currentUser->tokenCan('user.view')){
+            return $purchase->user()->first()->toArray();
         }
-        return $purchaseExtra;
+        return ['name' => $purchase->user->name];
+    }
+
+    private function getProviderInfo(Purchase $purchase, User $currentUser):array{
+        if($currentUser->tokenCan('provider.view')){
+            return $purchase->provider()->first()->toArray();
+        }
+        return ['name' => $purchase->provider->name];
+    }
+
+    private function createPurchaseDetails(Purchase $purchase, array $products):void{
+        foreach ($products as $product) {
+            $newPurchaseDetail = array_merge($product, [
+                'purchase_id' => $purchase->id
+            ]);
+            if(!isset($product['price'])){
+                $newPurchaseDetail['price'] = Product::find($product['product_id'])->price;
+            }
+            PurchaseDetail::create($newPurchaseDetail);
+        }
+    }
+
+    private function updatePurchaseDetails(Purchase $purchase, array $product):void{
+        $detail = $purchase->purchaseDetails()->where('id', $product['product_id'])->first();
+        $detail->update($product);
+    }
+
+    private function calculateTotal(Purchase $purchase):float{
+        $total = 0;
+        foreach ($purchase->purchaseDetails as $detail) {
+            $total += ($detail->price * $detail->quantity);
+        }
+        return $total;
     }
 }

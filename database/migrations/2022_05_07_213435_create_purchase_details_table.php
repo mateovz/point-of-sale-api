@@ -15,8 +15,8 @@ class CreatePurchaseDetailsTable extends Migration
     {
         Schema::create('purchase_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purchase_id')->references('id')->on('purchases');
-            $table->foreignId('productId')->references('id')->on('products');
+            $table->foreignId('purchase_id')->references('id')->on('purchases')->cascadeOnDelete();
+            $table->foreignId('product_id')->references('id')->on('products');
             $table->integer('quantity');
             $table->float('price');
             $table->timestamps();

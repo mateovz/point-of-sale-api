@@ -31,8 +31,13 @@ class UpdateRequest extends FormRequest
             'user_id'       => ['numeric', 'exists:users,id'],
             'purchase_date' => ['date', 'before:tomorrow'],
             'tax'           => ['numeric', 'max:100'],
-            'total'         => ['numeric', 'min:0.01'],
-            'status'        => ['boolean']
+            'status'        => ['boolean'],
+
+            //purchase details
+            'products'              => ['array'],
+            'products.*.product_id' => ['required', 'numeric', 'exists:products,id'],
+            'products.*.quantity'   => ['numeric', 'min:1'],
+            'products.*.price'      => ['numeric']
         ];
     }
 
