@@ -7,7 +7,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SaleController;
 use App\Http\Controllers\UserController;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,34 +37,13 @@ Route::prefix('user')->controller(UserController::class)->group(function(){
     });
 });
 
-Route::resource('role', RoleController::class)
-    ->names('role')
-    ->except(['create', 'show', 'edit']);
-
-Route::resource('permission', PermissionController::class)
-    ->names('permission')
-    ->except(['create', 'show', 'edit']);
-
-Route::resource('category', CategoryController::class)
-    ->names('category')
-    ->except(['create', 'show', 'edit']);
-
-Route::resource('provider', ProviderController::class)
-    ->names('provider')
-    ->except(['create', 'show', 'edit']);
-
-Route::resource('product', ProductController::class)
-    ->names('product')
-    ->except(['create', 'show', 'edit']);
-
-Route::resource('product', ProductController::class)
-    ->names('product')
-    ->except(['create', 'show', 'edit']);
-
-Route::resource('client', ClientController::class)
-    ->names('client')
-    ->except(['create', 'show', 'edit']);
-
-Route::resource('purchase', PurchaseController::class)
-    ->names('purchase')
-    ->except(['create', 'show', 'edit']);
+Route::apiResources([
+    'role'          => RoleController::class,
+    'permission'    => PermissionController::class,
+    'category'      => CategoryController::class,
+    'provider'      => ProviderController::class,
+    'product'       => ProductController::class,
+    'client'        => ClientController::class,
+    'purchase'      => PurchaseController::class,
+    'sale'          => SaleController::class
+]);
