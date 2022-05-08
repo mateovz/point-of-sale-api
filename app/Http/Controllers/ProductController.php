@@ -29,6 +29,21 @@ class ProductController extends Controller
         ], 200);
     }
 
+    public function show($id, Request $request){
+        $product = Product::find($id);
+        if(is_null($product)){
+            return response()->json([
+                'status'    => 'error',
+                'errors'    => ['product' => ['Does not exist.']]
+            ], 400);
+        }
+        $product = $this->getExtraInfo($product, $request->user());
+        return response()->json([
+            'status'    => 'success',
+            'product'  => $product
+        ], 200);
+    }
+
     public function store(StoreRequest $request){
         $product = Product::create($request->validated());
         $product = $this->getExtraInfo($product, $request->user());

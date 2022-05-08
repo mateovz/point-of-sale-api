@@ -26,7 +26,6 @@ class getProductTest extends TestCase
 
     public function test_get_with_provider_info(){
         Product::factory(5)->create();
-        $provider = Provider::first();
         $token = (User::factory()->create())
             ->createToken('default', ['provider.view'])->plainTextToken;
         $this->get(route('product.index'), [
@@ -35,15 +34,9 @@ class getProductTest extends TestCase
         ])->assertOk()
             ->assertJson(['status' => 'success'])
             ->assertJsonCount(5, 'products')
-            ->assertJson([
+            ->assertJsonStructure([
                 'products' => [
-                   0 => [
-                       'provider' => [
-                            'id'    => $provider->id,
-                            'name'  => $provider->name,
-                            'email' => $provider->email
-                       ]
-                   ]
+                    '*' => ['provider' => ['id', 'name', 'email']]
                 ]
             ]);
     }
@@ -59,13 +52,9 @@ class getProductTest extends TestCase
         ])->assertOk()
             ->assertJson(['status' => 'success'])
             ->assertJsonCount(5, 'products')
-            ->assertJson([
+            ->assertJsonStructure([
                 'products'  => [
-                    0 => [
-                        'provider' => [
-                            'name'  => $provider->name
-                        ]
-                    ]
+                    '*' => ['provider' => ['name']]
                 ]
             ])
             ->assertJsonMissing([
@@ -77,5 +66,33 @@ class getProductTest extends TestCase
                     ]
                 ]
             ]);
+    }
+
+    public function test_get_product(){
+        $token = (User::factory()->create())
+            ->createToken('default')->plainTextToken;
+        $product = Product::factory()->create();
+        $this->get(route('product.show', ['product' => $product->id]), [
+            'Accept'        => 'application/json',
+            'Authorization' => 'Bearer '.$token
+        ])
+            ->assertOk()
+            ->assertJson([
+                'status'    => 'success',
+                'product'  => ['id' => $product->id]
+            ])
+            ->assertJsonStructure(['product' => ['provider']]);
+    }
+
+    public function test_get_null_product(){
+        $token = (User::factory()->create())
+            ->createToken('default')->plainTextToken;
+        $this->get(route('product.show', ['product' => random_int(10, 20)]), [
+            'Accept'        => 'application/json',
+            'Authorization' => 'Bearer '.$token
+        ])
+            ->assertStatus(400)
+            ->assertJson(['status' => 'error'])
+            ->assertJsonStructure(['errors' => ['product']]);
     }
 }
