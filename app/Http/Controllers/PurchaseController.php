@@ -65,6 +65,9 @@ class PurchaseController extends Controller
             foreach ($data['products'] as $product) {
                 $this->updatePurchaseDetails($purchase, $product);
             }
+            
+            $total = $this->calculateTotal($purchase);
+            $purchase->update(['total' => $total]);
         }
 
         $purchase = $this->getPurchaseInfo($purchase, $request->user());
