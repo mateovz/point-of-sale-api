@@ -28,7 +28,8 @@ class UpdateTest extends TestCase
             ->assertJsonStructure([
                 'sale' => [
                     'user',
-                    'client'
+                    'client',
+                    'sale_details'
                 ]
             ]);
         $this->assertDatabaseHas('sales', $data);

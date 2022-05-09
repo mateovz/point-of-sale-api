@@ -88,6 +88,7 @@ class SaleController extends Controller
     }
 
     private function getSaleInfo(Sale $sale, User $user):array{
+        $sale->saleDetails;
         $sale = array_merge(
             $sale->toArray(),
             [

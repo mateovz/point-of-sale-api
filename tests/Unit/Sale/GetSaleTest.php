@@ -20,7 +20,16 @@ class GetSaleTest extends TestCase
             'Authorization' => 'Bearer '.$token
         ])->assertOk()
             ->assertJson(['status' => 'success'])
-            ->assertJsonCount(5, 'sales');
+            ->assertJsonCount(5, 'sales')
+            ->assertJsonStructure([
+                'sales' => [
+                    '*' => [
+                        'user',
+                        'client',
+                        'sale_details'
+                    ]
+                ]
+            ]);
     }
 
     public function test_get_with_user_and_client_info(){
