@@ -49,6 +49,9 @@ class StoreTest extends TestCase
             ->assertJsonCount(5, 'sale.sale_details')
             ->assertJson(['sale' => ['total' => $total]]);
         $this->assertDatabaseHas('sales', $data);
+        foreach ($extraData['products'] as $product) {
+            $this->assertDatabaseHas('sale_details', $product);
+        }
     }
 
     public function test_invalid_data(){
