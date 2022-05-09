@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Sale\StoreRequest;
 use App\Http\Requests\Sale\UpdateRequest;
+use App\Models\Product;
 use App\Models\Sale;
+use App\Models\SaleDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -47,7 +49,13 @@ class SaleController extends Controller
     public function store(StoreRequest $request){
         $data = $request->validated();
         $data['total'] = 0;
+
         $sale = Sale::create($data);
+        $this->createSaleDetails($sale, $data['products']);
+
+        $total = $this->calculateTotal($sale);
+        $sale->update(['total' => $total]);
+
         $sale = $this->getSaleInfo($sale, $request->user());
         return response()->json([
             'status'    => 'success',
@@ -111,5 +119,27 @@ class SaleController extends Controller
             return $sale->client()->first()->toArray();
         }
         return ['name' => $sale->client->name];
+    }
+
+    private function createSaleDetails(Sale $sale, array $products):void{
+        foreach ($products as $product) {
+            $newSaleDetail = array_merge($product, [
+                'sale_id'   => $sale->id
+            ]);
+            if(!isset($product['price'])){
+                $newSaleDetail['price'] = Product::find($product['product_id'])->price;
+            }
+            SaleDetail::create($newSaleDetail);
+        }
+    }
+
+    private function calculateTotal(Sale $sale):float{
+        $total = 0;
+        foreach ($sale->saleDetails as $detail) {
+            $newTotal = ($detail->price * $detail->quantity);
+            $discount = $newTotal * ($detail->discount / 100);
+            $total += ($newTotal - $discount);
+        }
+        return $total;
     }
 }

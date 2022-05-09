@@ -17,11 +17,24 @@ class StoreTest extends TestCase
     public function test_store(){
         $user = User::factory()->create();
         $token = $user->createToken('default')->plainTextToken;
+        $products = Product::factory(5)->create();
         $data = [
             'client_id'     => Client::factory()->create()->id,
             'user_id'       => $user->id
         ];
-        $this->post(route('sale.store'), $data, [
+        $extraData = $data;
+        $total = 0;
+        foreach ($products as $product) {
+            $extraData['products'][$product->id] = [
+                'product_id'    => $product->id,
+                'quantity'      => random_int(1, 10),
+                'discount'      => random_int(0, 5)
+            ];
+            $newTotal = ($product->price * $extraData['products'][$product->id]['quantity']);
+            $discount = $newTotal * ($extraData['products'][$product->id]['discount'] / 100);
+            $total += ($newTotal - $discount);
+        }
+        $this->post(route('sale.store'), $extraData, [
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token
         ])->assertOk()
@@ -32,7 +45,9 @@ class StoreTest extends TestCase
                     'client',
                     'sale_details'
                 ]
-            ]);
+            ])
+            ->assertJsonCount(5, 'sale.sale_details')
+            ->assertJson(['sale' => ['total' => $total]]);
         $this->assertDatabaseHas('sales', $data);
     }
 
