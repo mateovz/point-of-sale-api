@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Sale\StoreRequest;
 use App\Http\Requests\Sale\UpdateRequest;
 use App\Models\Sale;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SaleController extends Controller
@@ -19,6 +20,9 @@ class SaleController extends Controller
 
     public function index(Request $request){
         $sales = Sale::all();
+        foreach ($sales as $key => $sale) {
+            $sales[$key] = $this->getSaleInfo($sale, $request->user());
+        }
         return response()->json([
             'status'    => 'success',
             'sales' => $sales
@@ -33,6 +37,7 @@ class SaleController extends Controller
                 'errors'    => ['sale' => ['Does not exist.']]
             ], 400);
         }
+        $sale = $this->getSaleInfo($sale, $request->user());
         return response()->json([
             'status'    => 'success',
             'sale'  => $sale
@@ -43,6 +48,7 @@ class SaleController extends Controller
         $data = $request->validated();
         $data['total'] = 0;
         $sale = Sale::create($data);
+        $sale = $this->getSaleInfo($sale, $request->user());
         return response()->json([
             'status'    => 'success',
             'sale'  => $sale
@@ -60,6 +66,7 @@ class SaleController extends Controller
         
         $data = $request->validated();
         $sale->update($data);
+        $sale = $this->getSaleInfo($sale, $request->user());
         return response()->json([
             'status'    => 'success',
             'sale'  => $sale
@@ -78,5 +85,30 @@ class SaleController extends Controller
         return response()->json([
             'status'    => 'success'
         ], 200);
+    }
+
+    private function getSaleInfo(Sale $sale, User $user):array{
+        $sale = array_merge(
+            $sale->toArray(),
+            [
+                'user'      => $this->getUserInfo($sale, $user),
+                'client'    => $this->getClientInfo($sale, $user)
+            ]
+        );
+        return $sale;
+    }
+
+    private function getUserInfo(Sale $sale, User $user):array{
+        if($user->tokenCan('user.view')){
+            return $sale->user()->first()->toArray();
+        }
+        return ['name' => $sale->user->name];
+    }
+
+    private function getClientInfo(Sale $sale, User $user):array{
+        if($user->tokenCan('client.view')){
+            return $sale->client()->first()->toArray();
+        }
+        return ['name' => $sale->client->name];
     }
 }
