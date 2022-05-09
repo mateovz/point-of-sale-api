@@ -74,6 +74,16 @@ class SaleController extends Controller
         
         $data = $request->validated();
         $sale->update($data);
+
+        if(isset($data['products'])){
+            foreach ($data['products'] as $product) {
+                $this->updateSaleDetails($sale, $product);
+            }
+            
+            $total = $this->calculateTotal($sale);
+            $sale->update(['total' => $total]);
+        }
+
         $sale = $this->getSaleInfo($sale, $request->user());
         return response()->json([
             'status'    => 'success',
@@ -130,6 +140,15 @@ class SaleController extends Controller
                 $newSaleDetail['price'] = Product::find($product['product_id'])->price;
             }
             SaleDetail::create($newSaleDetail);
+        }
+    }
+
+    private function updateSaleDetails(Sale $sale, array $product):void{
+        $detail = $sale->saleDetails()->where('id', $product['product_id'])->first();
+        if(is_null($detail)){
+            $this->createSaleDetails($sale, [$product]);
+        }else{
+            $detail->update($product);
         }
     }
 
