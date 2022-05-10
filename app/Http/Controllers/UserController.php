@@ -23,7 +23,9 @@ class UserController extends Controller
             ], 401);
         }
         $permissions = $user->permissions();
-        $token = $user->createToken($user['device'] ?? 'default', $permissions)->plainTextToken;
+        $device = $user['device'] ?? 'default';
+        $user->tokens()->where('name', $device)->delete();
+        $token = $user->createToken($device, $permissions)->plainTextToken;
         return response()->json([
             'status' => 'success',
             'token' => $token,

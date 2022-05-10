@@ -2,7 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Permission;
+use App\Models\Product;
+use App\Models\Provider;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -17,12 +20,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()->state(['email' => 'admin@admin.com', 'password' => Hash::make('test')])
+        User::factory()->state(['email' => 'admin@admin.com'])
             ->has(
-                Role::factory(['slug' => 'admin'])
+                Role::factory(['name' => 'Administrador','slug' => 'admin'])
                     ->hasPermissions(['name' => 'all', 'slug' => '*'])
             )
             ->create();
+
+        $providers = Provider::factory(random_int(1, 10))->create();
+        $categories = Category::factory(random_int(1, 10))->create();
+        foreach ($providers as $provider) {
+            Product::factory(random_int(1, 20))
+                ->state([
+                    'category_id'   => $categories[random_int(0, (count($categories) - 1))]->id,
+                    'provider_id'   => $provider->id
+                ])
+                ->create();
+        }
 
         $permissions = [
             ['name' => 'Registrar usuario',     'slug' => 'user.register'],
