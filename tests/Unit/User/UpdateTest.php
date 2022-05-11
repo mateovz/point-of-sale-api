@@ -14,12 +14,13 @@ class UpdateTest extends TestCase
 
     public function test_update(){
         $user = User::factory()->create();
-        $token = $user->createToken('default')->plainTextToken;
+        $token = User::factory()->create()
+            ->createToken('default')->plainTextToken;
         $data = [
             'name'  => $this->faker->firstName,
             'email' => $user->email
         ];
-        $this->put(route('user.update'), $data, [
+        $this->put(route('user.update', ['user' => $user->id]), $data, [
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token
         ])->assertOk()
@@ -38,7 +39,7 @@ class UpdateTest extends TestCase
         $token = User::factory()->create()
             ->createToken('default')->plainTextToken;
         $data = ['email' => null];
-        $this->put(route('user.update'), $data, [
+        $this->put(route('user.update', ['user' => random_int(10, 20)]), $data, [
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token
         ])->assertStatus(400)
@@ -54,7 +55,7 @@ class UpdateTest extends TestCase
             'email' => $user1->email,
             'name'  => $this->faker->firstName
         ];
-        $this->put(route('user.update'), $data, [
+        $this->put(route('user.update', ['user' => $user2->id]), $data, [
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token
         ])->assertStatus(400)

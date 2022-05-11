@@ -35,11 +35,11 @@ Route::prefix('user')->controller(UserController::class)->group(function(){
             ->name('user.register')
             ->middleware('ability:user.register');
         
-        Route::put('update', 'update')
+        Route::put('{user}', 'update')
             ->name('user.update')
             ->middleware('ability:user.update');    
 
-        Route::delete('delete/{id}', 'delete')
+        Route::delete('{user}', 'delete')
             ->name('user.delete')
             ->middleware('ability:user.delete');
     });

@@ -14,7 +14,7 @@ class DeleteTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
         $token = $user2->createToken('default')->plainTextToken;
-        $this->delete(route('user.delete', ['id' => $user1->id]), [], [
+        $this->delete(route('user.delete', ['user' => $user1->id]), [], [
             'Authorization' => 'Bearer '.$token,
             'Accept'        => 'application/json'
         ])->assertOk()
@@ -27,7 +27,7 @@ class DeleteTest extends TestCase
     public function test_user_null(){
         $user = User::factory()->create();
         $token = $user->createToken('default')->plainTextToken;
-        $this->delete(route('user.delete', ['id' => random_int(10, 20)]), [], [
+        $this->delete(route('user.delete', ['user' => random_int(10, 20)]), [], [
             'Authorization' => 'Bearer '.$token,
             'Accept'        => 'application/json'
         ])->assertStatus(400)

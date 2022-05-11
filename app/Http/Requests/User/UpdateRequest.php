@@ -28,7 +28,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'name'  => ['string'],
-            'email' => ['email', 'unique:users,email,'.auth('sanctum')->user()->id]
+            'email' => ['email', 'unique:users,email,'.$this->user]
         ];
     }
 

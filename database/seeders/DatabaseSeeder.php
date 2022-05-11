@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
                     ->hasPermissions(['name' => 'all', 'slug' => '*'])
             )
             ->create();
-
+        User::factory(5)->create();
         $providers = Provider::factory(random_int(1, 10))->create();
         $categories = Category::factory(random_int(1, 10))->create();
         foreach ($providers as $provider) {

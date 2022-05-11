@@ -76,9 +76,15 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function update(UpdateRequest $request){
+    public function update($id, UpdateRequest $request){
         $data = $request->validated();
-        $user = $request->user();
+        $user = User::find($id);
+        if(is_null($user)){
+            return response()->json([
+                'status'    => 'error',
+                'errors'    => ['user' => ['Does not exist.']]
+            ], 400);
+        }
         $user->update($data);
         return response()->json([
             'status'    => 'success',
