@@ -23,6 +23,14 @@ Route::prefix('user')->controller(UserController::class)->group(function(){
     Route::middleware('auth:sanctum')->group(function(){
         Route::post('logout', 'logout')->name('user.logout');
 
+        Route::get('', 'index')
+            ->name('user.index')
+            ->middleware('ability:user.view');
+
+        Route::get('{user}', 'show')
+            ->name('user.show')
+            ->middleware('ability:user.view');
+
         Route::post('register', 'register')
             ->name('user.register')
             ->middleware('ability:user.register');

@@ -11,6 +11,32 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    public function index(Request $request){
+        $users = User::all()->except($request->user()->id);
+        foreach ($users as $user) {
+            $user->permissions();
+        }
+        return response()->json([
+            'status'    => 'success',
+            'users'     => $users
+        ], 200);
+    }
+
+    public function show($id){
+        $user = User::find($id);
+        if(is_null($user)){
+            return response()->json([
+                'status'    => 'error',
+                'errors'    => ['user' => ['Does not exist.']]
+            ], 400);
+        }
+        $user->permissions();
+        return response()->json([
+            'status'    => 'success',
+            'user'      => $user
+        ], 200);
+    }
+
     public function login(LoginRequest $request){
         $data = $request->validated();
         $user = User::where('email', $data['email'])->first();
