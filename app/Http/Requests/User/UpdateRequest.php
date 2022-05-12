@@ -28,7 +28,13 @@ class UpdateRequest extends FormRequest
     {
         return [
             'name'  => ['string'],
-            'email' => ['email', 'unique:users,email,'.$this->user]
+            'email' => ['email', 'unique:users,email,'.$this->user],
+
+            'roles'             => ['array'],
+            'roles.add'         => ['array'],
+            'roles.add.*.id'    => ['required', 'numeric', 'exists:roles,id'],   
+            'roles.remove'      => ['array'],
+            'roles.remove.*.id' => ['required', 'numeric']
         ];
     }
 

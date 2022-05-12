@@ -86,6 +86,8 @@ class UserController extends Controller
             ], 400);
         }
         $user->update($data);
+        if(isset($data['roles']['add'])) $this->addRoles($user, $data['roles']['add']);
+        if(isset($data['roles']['remove'])) $this->removeRoles($user, $data['roles']['remove']);
         return response()->json([
             'status'    => 'success',
             'user'      => $user
@@ -104,5 +106,17 @@ class UserController extends Controller
         return response()->json([
             'status'    => 'success'
         ], 200);
+    }
+
+    private function addRoles(User $user, array $roles):void{
+        foreach ($roles as $role) {
+            $user->roles()->attach($role['id']);
+        }
+    }
+
+    private function removeRoles(User $user, array $roles):void{
+        foreach ($roles as $role) {
+            $user->roles()->detach($role['id']);
+        }
     }
 }
