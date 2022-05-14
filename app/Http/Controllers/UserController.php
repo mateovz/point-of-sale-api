@@ -70,7 +70,10 @@ class UserController extends Controller
     public function register(RegisterRequest $request){
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
-        User::create($data);
+        $user = User::create($data);
+        if($request->user()->tokenCan('user.change.role')){
+            if(isset($data['roles']['add'])) $this->addRoles($user, $data['roles']['add']);
+        }
         return response()->json([
             'status'    => 'success'
         ], 200);
