@@ -110,7 +110,9 @@ class UserController extends Controller
 
     private function addRoles(User $user, array $roles):void{
         foreach ($roles as $role) {
-            $user->roles()->attach($role['id']);
+            if(!is_object($user->roles()->find($role['id']))){
+                $user->roles()->attach($role['id']);
+            }
         }
     }
 
