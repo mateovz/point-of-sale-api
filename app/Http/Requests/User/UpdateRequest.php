@@ -34,7 +34,9 @@ class UpdateRequest extends FormRequest
             'roles.add'         => ['array'],
             'roles.add.*.id'    => ['required', 'numeric', 'exists:roles,id'],   
             'roles.remove'      => ['array'],
-            'roles.remove.*.id' => ['required', 'numeric']
+            'roles.remove.*.id' => ['required', 'numeric'],
+
+            'avatar'    => ['image', 'mimes:png,jpg,jpeg', 'max:2048', 'dimensions:max_width=1000,max_height=1000']
         ];
     }
 
@@ -42,6 +44,10 @@ class UpdateRequest extends FormRequest
     {
         if(isset($this->userData) && $this->userData){
             $this->merge(json_decode($this->userData, true, 512, JSON_THROW_ON_ERROR));
+        }
+
+        if(isset($this->avatar) && $this->avatar){
+            $this->merge(['avatar' => $this->avatar]);
         }
     }
 

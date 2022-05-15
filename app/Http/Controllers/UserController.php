@@ -7,7 +7,9 @@ use App\Http\Requests\User\RegisterRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -93,6 +95,9 @@ class UserController extends Controller
             if(isset($data['roles']['add'])) $this->addRoles($user, $data['roles']['add']);
             if(isset($data['roles']['remove'])) $this->removeRoles($user, $data['roles']['remove']);
         }
+        if($request->hasFile('avatar')){
+            $user = $this->uploadAvatar($user, $request->file('avatar'));
+        }
         return response()->json([
             'status'    => 'success',
             'user'      => $user
@@ -125,5 +130,18 @@ class UserController extends Controller
         foreach ($roles as $role) {
             $user->roles()->detach($role['id']);
         }
+    }
+
+    private function uploadAvatar(User $user, UploadedFile $avatar):User{
+        if($user->avatar){
+            $urlOld = 'public/avatars/'.$user->avatar;
+            if(Storage::exists($urlOld)){
+                Storage::delete($urlOld);
+            }
+        }
+        $image = $avatar->store('public/avatars');
+        $url = Storage::url($image);
+        $user->update(['avatar' => $url]);
+        return $user;
     }
 }
