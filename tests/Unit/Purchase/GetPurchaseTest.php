@@ -26,7 +26,7 @@ class GetPurchaseTest extends TestCase
     public function test_get_with_user_and_provider_info(){
         Purchase::factory(5)->create();
         $token = (User::factory()->create())
-            ->createToken('default', ['user.view', 'provider.view'])->plainTextToken;
+            ->createToken('default', ['purchase.view', 'user.view', 'provider.view'])->plainTextToken;
         $this->get(route('purchase.index'), [
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token

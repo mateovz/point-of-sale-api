@@ -35,7 +35,7 @@ class GetSaleTest extends TestCase
     public function test_get_with_user_and_client_info(){
         Sale::factory(5)->create();
         $token = User::factory()->create()
-            ->createToken('default', ['user.view', 'client.view'])->plainTextToken;
+            ->createToken('default', ['sale.view', 'user.view', 'client.view'])->plainTextToken;
         $this->get(route('sale.index'), [
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token
