@@ -134,7 +134,7 @@ class UserController extends Controller
 
     private function uploadAvatar(User $user, UploadedFile $avatar):User{
         if($user->avatar){
-            $urlOld = 'public/avatars/'.$user->avatar;
+            $urlOld = str_replace('storage', 'public', $user->avatar);
             if(Storage::exists($urlOld)){
                 Storage::delete($urlOld);
             }
