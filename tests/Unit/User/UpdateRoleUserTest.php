@@ -25,7 +25,7 @@ class UpdateRoleUser extends TestCase
                 ]
             ]
         ];
-        $this->put(route('user.update', ['user' => $user->id]), $data, [
+        $this->post(route('user.update', ['user' => $user->id]), $data, [
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer '.$token
         ])->assertOk()

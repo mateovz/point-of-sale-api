@@ -35,7 +35,7 @@ Route::prefix('user')->controller(UserController::class)->group(function(){
             ->name('user.register')
             ->middleware('ability:user.register');
         
-        Route::put('{user}', 'update')
+        Route::post('{user}', 'update')
             ->name('user.update')
             ->middleware('ability:user.update');    
 

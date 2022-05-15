@@ -38,6 +38,13 @@ class UpdateRequest extends FormRequest
         ];
     }
 
+    protected function prepareForValidation()
+    {
+        if(isset($this->userData) && $this->userData){
+            $this->merge(json_decode($this->userData, true, 512, JSON_THROW_ON_ERROR));
+        }
+    }
+
     protected function failedValidation(Validator $validator)
     {
         $errors = (new ValidationException($validator))->errors();
