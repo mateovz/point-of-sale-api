@@ -15,6 +15,7 @@ class SaleController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
+        $this->middleware('ability:sale.view')->only('index', 'show');
         $this->middleware('ability:sale.store')->only('store');
         $this->middleware('ability:sale.update')->only('update');
         $this->middleware('ability:sale.destroy')->only('destroy');

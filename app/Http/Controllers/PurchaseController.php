@@ -15,6 +15,7 @@ class PurchaseController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
+        $this->middleware('ability:purchase.view')->only('index', 'show');
         $this->middleware('ability:purchase.store')->only('store');
         $this->middleware('ability:purchase.update')->only('update');
         $this->middleware('ability:purchase.destroy')->only('destroy');
