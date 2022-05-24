@@ -39,6 +39,17 @@ class RegisterRequest extends FormRequest
         ];
     }
 
+    protected function prepareForValidation()
+    {
+        if(isset($this->userData) && $this->userData){
+            $this->merge(json_decode($this->userData, true, 512, JSON_THROW_ON_ERROR));
+        }
+
+        if(isset($this->avatar) && $this->avatar){
+            $this->merge(['avatar' => $this->avatar]);
+        }
+    }
+
     protected function failedValidation(Validator $validator)
     {
         $errors = (new ValidationException($validator))->errors();

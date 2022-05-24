@@ -76,6 +76,9 @@ class UserController extends Controller
         if($request->user()->tokenCan('user.change.role')){
             if(isset($data['roles']['add'])) $this->addRoles($user, $data['roles']['add']);
         }
+        if($request->hasFile('avatar')){
+            $user = $this->uploadAvatar($user, $request->file('avatar'));
+        }
         return response()->json([
             'status'    => 'success'
         ], 200);
